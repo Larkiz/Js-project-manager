@@ -88,17 +88,19 @@ a {
   display: flex;
   flex-direction: column;
 }
-.project-card .button {
+.button-blue {
   background-color: #2a68a3;
-  border: 1px solid rgb(61, 61, 61);
-  font-size: 17px;
 }
 
-.project-card button:hover {
+.button-blue:hover {
   background-color: #1b5891;
-  color: #fff;
 }
-
+.project-option-screen .button-blue {
+  background-color: #363636;
+}
+.project-option-screen .button-blue:hover {
+  background-color: #242424;
+}
 .project-card:hover {
   background-color: #1f1f1f;
 }

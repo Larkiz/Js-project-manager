@@ -6,9 +6,10 @@
 import { randomUUID } from 'crypto';
 import { dialog } from 'electron';
 import { readFile, readdir, writeFile } from 'fs';
+import { exec } from 'child_process';
 import isNodeProject from '../functions/isNodeProject';
 
-interface Project {
+export interface Project {
   id: string;
   name: string;
   path: string;
@@ -101,6 +102,37 @@ const projectsAction = {
         }
         return null;
       });
+  },
+  startProject(event: Electron.IpcMainEvent, path: string, _id: string) {
+    event.reply('projectStatus', { id: _id, running: true });
+
+    exec(
+      `start cmd.exe /k "cd ${path} && npm start"`,
+      (error, stdout, stderr) => {
+        if (error || stderr) {
+          event.reply('projectStatus', { id: _id, running: false });
+        }
+      },
+    );
+  },
+  stopProject(event: Electron.IpcMainEvent, _path: string, _id: string) {
+    const path = _path.replaceAll('\\', '\\\\');
+
+    exec(
+      `wmic process where "CommandLine like '%${path}%'" get ProcessId`,
+      (error, stdout) => {
+        const PID = stdout.match(/\d+/g);
+
+        if (PID) {
+          for (let i = 0; i < PID.length; i++) {
+            exec(`start taskkill /F /PID ${PID[i]}`);
+          }
+
+          return event.reply('projectStatus', { id: _id, running: false });
+        }
+        return null;
+      },
+    );
   },
 };
 

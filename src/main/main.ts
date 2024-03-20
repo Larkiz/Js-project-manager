@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable promise/catch-or-return */
@@ -13,7 +14,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, dialog, Event } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import { readFile, readFileSync, writeFile } from 'fs';
@@ -43,17 +44,17 @@ ipcMain.on('getDir', (event) =>
 );
 ipcMain.on('addFolder', (e) => projectsAction.addFolder(mainWindow, e));
 ipcMain.on('addProject', (e) => projectsAction.addProject(mainWindow, e));
-ipcMain.on('createProject', (event, path) => {
-  exec(
-    `mkdir ${path} && cd /d ${path} && npm init -y`,
-    (error, stdout, stderr) => {
-      console.log(stdout);
-    },
-  );
-});
 
 ipcMain.on('uninstallDependencies', (event, _data, dep) =>
-  npmControl.uninstall(_data, dep),
+  npmControl.uninstall(_data, dep).then((err) => {
+    if (!err) {
+      event.reply('dependenciesDeleted', {
+        id: _data.id,
+        deleted: true,
+        dependecies: dep,
+      });
+    }
+  }),
 );
 
 ipcMain.on('execCommand', (event, command) => {
@@ -62,47 +63,19 @@ ipcMain.on('execCommand', (event, command) => {
   exec(command);
 });
 
-ipcMain.on('startProject', (event, path, _id) => {
-  event.reply('projectStatus', { id: _id, running: true });
-  console.log(`start cmd.exe /k "cd ${path} && npm start"`);
+ipcMain.on('startProject', (event, path, _id) =>
+  projectsAction.startProject(event, path, _id),
+);
 
-  const cmd = exec(
-    `start cmd.exe /k "cd ${path} && npm start"`,
-    (error, stdout, stderr) => {
-      if (error || stderr || !stdout) {
-        event.reply('projectStatus', { id: _id, running: false });
-      }
-    },
-  );
-});
+ipcMain.on('stopProject', (event, path, _id): void =>
+  projectsAction.stopProject(event, path, _id),
+);
 
-ipcMain.on('stopProject', (event, _path, _id) => {
-  const path = _path.replaceAll('\\', '\\\\');
-
-  exec(
-    `wmic process where "CommandLine like '%${path}%'" get ProcessId`,
-    (error, stdout, stderr) => {
-      const PID = stdout.match(/\d+/g);
-      console.log(
-        `wmic process where "CommandLine like '%${path}%'" get ProcessId`,
-      );
-      if (PID) {
-        for (let i = 0; i < PID.length; i++) {
-          console.log(`taskkill /F /PID ${PID[i]}`);
-
-          exec(`start taskkill /F /PID ${PID[i]}`);
-        }
-        event.reply('projectStatus', { id: _id, running: false });
-      }
-    },
-  );
-});
-
-ipcMain.on('getCreatedProjects', (event) => {
+ipcMain.on('getCreatedProjects', (event): Event | void => {
   try {
     const data = readFileSync(`./projects.json`, 'utf8');
 
-    event.reply('getCreatedProjects', JSON.parse(data));
+    return event.reply('getCreatedProjects', JSON.parse(data));
   } catch (error) {
     console.log(error);
   }

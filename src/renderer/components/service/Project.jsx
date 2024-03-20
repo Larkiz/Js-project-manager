@@ -2,7 +2,8 @@
 
 import { Link } from 'react-router-dom';
 import external from '../../assets/img/external.png';
-import { code, open, start, stop } from './functions/projectControl';
+import { code, open } from './functions/projectControl';
+import StartButton from './StartButton';
 
 export default function Project({ data }) {
   return (
@@ -19,26 +20,10 @@ export default function Project({ data }) {
         </button>
 
         <div className="btns">
-          {!data.running ? (
-            <button
-              className="button"
-              type="button"
-              onClick={(e) => start(e, data.path, data.id)}
-            >
-              Start
-            </button>
-          ) : (
-            <button
-              className="button"
-              type="button"
-              onClick={(e) => stop(e, data.path, data.id)}
-            >
-              Stop
-            </button>
-          )}
+          <StartButton state={data} />
 
           <button
-            className="button"
+            className="button button-blue"
             type="button"
             onClick={(e) => code(e, data.path)}
           >

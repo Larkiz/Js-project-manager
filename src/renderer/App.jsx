@@ -6,17 +6,19 @@ import InitProject from './components/InitProject';
 import MyProjects from './components/MyProjects';
 import AsideMenu from './components/service/AsideMenu';
 import ProjectOption from './components/ProjectOptions';
+import ProjectContext from './components/service/context/ProjectsContext';
 
 export default function App() {
   return (
     <Router>
       <AsideMenu />
-
-      <Routes>
-        <Route path="/options" element={<ProjectOption />} />
-        <Route path="/createProjects" element={<InitProject />} />
-        <Route path="/" element={<MyProjects />} />
-      </Routes>
+      <ProjectContext>
+        <Routes>
+          <Route path="/options" element={<ProjectOption />} />
+          <Route path="/createProjects" element={<InitProject />} />
+          <Route path="/" element={<MyProjects />} />
+        </Routes>
+      </ProjectContext>
     </Router>
   );
 }

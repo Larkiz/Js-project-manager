@@ -10,11 +10,19 @@ export default function ProjectDep({ data }) {
   const [deps, setDeps] = useState(keys);
 
   function npmUninstallHandler(e, dep) {
-    setDeps(
-      deps.filter((i) => {
-        return i !== dep;
-      }),
+    window.electron.ipcRenderer.once(
+      'dependenciesDeleted',
+      (deletedProject) => {
+        if (deletedProject.deleted) {
+          setDeps(
+            deps.filter((i) => {
+              return i !== dep;
+            }),
+          );
+        }
+      },
     );
+
     npmUninstall(e, { path: data.path, id: data.id }, dep);
   }
 
@@ -25,7 +33,7 @@ export default function ProjectDep({ data }) {
 
         return (
           <h2 key={i} className="dep">
-            {dep} {data[dep]}{' '}
+            {dep} {data.dependencies[dep]}{' '}
             <button
               onClick={(e) => {
                 npmUninstallHandler(e, dep);

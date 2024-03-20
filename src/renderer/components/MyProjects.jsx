@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -5,12 +6,13 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable no-console */
 
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Project from './service/Project';
+import { projectsContext } from './service/context/ProjectsContext';
 
 /* eslint-disable prettier/prettier */
 export default function MyProjects() {
-  const [projects, setProjects] = useState([]);
+  const { projects, setProjects } = useContext(projectsContext);
 
   function addFolder() {
     window.electron.ipcRenderer.sendMessage('addFolder');
@@ -20,14 +22,6 @@ export default function MyProjects() {
   }
 
   useEffect(() => {
-    window.electron.ipcRenderer.sendMessage('getCreatedProjects');
-    window.electron.ipcRenderer.once('getCreatedProjects', (_projects) => {
-      setProjects(
-        _projects.map((i) => {
-          return { ...i, running: false };
-        }),
-      );
-    });
     window.electron.ipcRenderer.on('addFolder', (_projects) => {
       setProjects(
         _projects.map((i) => {
@@ -41,16 +35,6 @@ export default function MyProjects() {
       } else {
         setProjects(_project);
       }
-    });
-    window.electron.ipcRenderer.on('projectStatus', (status) => {
-      setProjects((prev) => {
-        return prev.map((i) => {
-          if (status.id === i.id) {
-            return { ...i, running: status.running };
-          }
-          return i;
-        });
-      });
     });
   }, []);
 
