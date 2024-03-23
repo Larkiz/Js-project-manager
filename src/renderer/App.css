@@ -127,7 +127,7 @@ a {
 }
 
 .path-button:hover {
-  background-color: #202020;
+  background-color: #464646;
 }
 
 .path-button img {
@@ -152,20 +152,73 @@ a {
   gap: 10px;
 }
 
-.dep img {
+.img-button img {
   width: 20px;
   height: 20px;
 }
 
-.dep button {
+.img-button {
   background-color: transparent;
   border: none;
   cursor: pointer;
   padding: 5px;
   border-radius: 4px;
   transition: 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .dep button:hover {
   background-color: #bebebe;
+}
+
+.package-card {
+  width: 400px;
+  max-width: 450px;
+  border-bottom: 1px solid #dadada;
+  padding-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.keywords {
+  display: flex;
+  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.keywords div {
+  display: inline-block;
+  background-color: #d3d3d3;
+  padding: 2px 3px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.package-card h2 {
+  display: flex;
+  align-items: center;
+}
+
+.package-card a {
+  font-size: 13px;
+}
+
+.package-card a:hover {
+  background-color: #d3d3d3;
+}
+
+.dependencies-control {
+  display: grid;
+  grid-template-columns: repeat(2, 50%);
+}
+
+.founded-packages {
+  height: 400px;
+  overflow-y: scroll;
+  border: 1px solid #c4c4c4;
+  padding: 10px;
 }

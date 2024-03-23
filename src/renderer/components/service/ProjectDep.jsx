@@ -1,13 +1,20 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import deleteImg from '../../assets/img/delete.png';
 import { npmUninstall } from './functions/projectControl';
+import { projectsContext } from './context/ProjectsContext';
 
 export default function ProjectDep({ data }) {
-  const keys = Object.keys(data.dependencies);
-  const [deps, setDeps] = useState(keys);
+  const { getProject } = useContext(projectsContext);
+  const [deps, setDeps] = useState(
+    Object.keys(getProject(data.id).dependencies),
+  );
+
+  useEffect(() => {
+    setDeps(Object.keys(getProject(data.id).dependencies));
+  }, [getProject]);
 
   function npmUninstallHandler(e, dep) {
     window.electron.ipcRenderer.once(
@@ -35,6 +42,7 @@ export default function ProjectDep({ data }) {
           <h2 key={i} className="dep">
             {dep} {data.dependencies[dep]}{' '}
             <button
+              className="img-button"
               onClick={(e) => {
                 npmUninstallHandler(e, dep);
               }}

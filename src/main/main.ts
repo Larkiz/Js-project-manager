@@ -45,7 +45,12 @@ ipcMain.on('getDir', (event) =>
 ipcMain.on('addFolder', (e) => projectsAction.addFolder(mainWindow, e));
 ipcMain.on('addProject', (e) => projectsAction.addProject(mainWindow, e));
 
-ipcMain.on('uninstallDependencies', (event, _data, dep) =>
+interface ProjectPath {
+  path: string;
+  id: string;
+}
+
+ipcMain.on('uninstallDependencies', (event, _data: ProjectPath, dep) =>
   npmControl.uninstall(_data, dep).then((err) => {
     if (!err) {
       event.reply('dependenciesDeleted', {
@@ -55,6 +60,21 @@ ipcMain.on('uninstallDependencies', (event, _data, dep) =>
       });
     }
   }),
+);
+ipcMain.on(
+  'installDependencies',
+  (event, _data: ProjectPath, dep, depVersion) => {
+    npmControl.install(_data, dep, depVersion).then((err) => {
+      if (!err) {
+        event.reply('dependenciesInstalled', {
+          id: _data.id,
+          installed: true,
+          dependecies: dep,
+          version: depVersion,
+        });
+      }
+    });
+  },
 );
 
 ipcMain.on('execCommand', (event, command) => {

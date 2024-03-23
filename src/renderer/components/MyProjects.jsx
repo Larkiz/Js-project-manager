@@ -7,7 +7,7 @@
 /* eslint-disable no-console */
 
 import { useContext, useEffect, useState } from 'react';
-import Project from './service/Project';
+import Project from './service/additional/Project';
 import { projectsContext } from './service/context/ProjectsContext';
 
 /* eslint-disable prettier/prettier */

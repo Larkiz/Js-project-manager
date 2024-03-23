@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
 
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
-import external from '../../assets/img/external.png';
-import { code, open } from './functions/projectControl';
+import external from '../../../assets/img/external.png';
+import { code, open } from '../functions/projectControl';
 import StartButton from './StartButton';
 
-export default function Project({ data }) {
+const Project = memo(function ({ data }) {
   return (
     <Link state={data} to="options">
       <div className="project-card">
@@ -33,4 +34,6 @@ export default function Project({ data }) {
       </div>
     </Link>
   );
-}
+});
+
+export default Project;

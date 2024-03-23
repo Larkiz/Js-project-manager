@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {
   createContext,
@@ -28,6 +29,16 @@ const ProjectContext = memo(function ProjectContext({
       },
     );
     window.electron.ipcRenderer.on('projectStatus', (status: any) => {
+      const started: Object = JSON.parse(
+        sessionStorage.getItem('running') || '""',
+      );
+      const data: any = {};
+      if (status.running && !started.hasOwnProperty(status.id)) {
+        data[status.id] = { id: status.id, status: true };
+      } else {
+        delete started[status.id];
+      }
+      sessionStorage.setItem('running', JSON.stringify(data));
       setProjects((prev: any) => {
         return prev.map((i: Project) => {
           if (status.id === i.id) {
@@ -56,12 +67,39 @@ const ProjectContext = memo(function ProjectContext({
         return null;
       },
     );
+    window.electron.ipcRenderer.on(
+      'dependenciesInstalled',
+      (installed: any) => {
+        console.log(installed);
+
+        if (installed.installed) {
+          return setProjects((prev: any): any => {
+            return prev.map((project: Project) => {
+              if (project.id === installed.id) {
+                project.dependencies[installed.dependecies] = installed.version;
+                return project;
+              }
+              return project;
+            });
+          });
+        }
+
+        return null;
+      },
+    );
   }, []);
 
+  // const getProject = (id: string) => {
+  //   return projects?.find((project) => project.id === id);
+  // };
+  function getProject(id: string) {
+    return projects?.find((project) => project.id === id);
+  }
   const actions = useMemo(() => {
     return {
       setProjects,
       projects,
+      getProject,
     };
   }, [projects]);
 

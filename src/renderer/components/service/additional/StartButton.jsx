@@ -1,4 +1,4 @@
-import { start, stop } from './functions/projectControl';
+import { start, stop } from '../functions/projectControl';
 
 export default function StartButton({ state }) {
   if (!state.running) {
@@ -6,7 +6,9 @@ export default function StartButton({ state }) {
       <button
         className="button button-blue"
         type="button"
-        onClick={(e) => start(e, state.path, state.id)}
+        onClick={(e) => {
+          start(e, state.path, state.id);
+        }}
       >
         Start
       </button>
@@ -16,7 +18,9 @@ export default function StartButton({ state }) {
     <button
       className="button button-blue"
       type="button"
-      onClick={(e) => stop(e, state.path, state.id)}
+      onClick={(e) => {
+        stop(e, state.path, state.id);
+      }}
     >
       Stop
     </button>

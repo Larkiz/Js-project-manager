@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-shadow */
 // /* eslint-disable prettier/prettier */
@@ -109,7 +110,7 @@ const projectsAction = {
     exec(
       `start cmd.exe /k "cd ${path} && npm start"`,
       (error, stdout, stderr) => {
-        if (error || stderr) {
+        if (error || stderr || !stdout) {
           event.reply('projectStatus', { id: _id, running: false });
         }
       },
